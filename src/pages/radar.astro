@@ -143,7 +143,7 @@ body { background:#03030a; color:#f0eeff; }
 #time-display b { color:#f0eeff; }
 
 /* Scrubber */
-.scrubber-wrap { position:relative; padding-bottom:20px; cursor:pointer; user-select:none; }
+.scrubber-wrap { position:relative; padding-bottom:22px; cursor:pointer; user-select:none; }
 #scrubber-track {
   width:100%; height:5px; border-radius:999px;
   background:rgba(255,255,255,0.1); position:relative; overflow:visible;
@@ -167,10 +167,11 @@ body { background:#03030a; color:#f0eeff; }
 }
 .stick {
   position:absolute; bottom:0;
-  font-size:0.47rem; color:rgba(240,238,255,0.22);
-  letter-spacing:0.04em; transform:translateX(-50%);
+  font-size:0.44rem; color:rgba(240,238,255,0.3);
+  letter-spacing:0; transform:translateX(-50%);
   white-space:nowrap;
 }
+.stick.now-label { color:#a29bfe; font-weight:700; }
 
 /* Leaflet */
 .leaflet-container { background:#03030a !important; }
@@ -328,12 +329,19 @@ async function loadRadar() {
       if (!validPaths.has(p)) { map.removeLayer(layerCache[p]); delete layerCache[p]; }
     });
     buildScrubber();
+    // Preload all frames by adding them to map at opacity 0 so tiles fetch in background
+    radarFrames.forEach((f, i) => {
+      const l = getLayer(f);
+      if (!map.hasLayer(l)) l.addTo(map);
+      // keep opacity 0 until shown
+    });
     showFrame(radarFrames.length - 1);
   } catch(e) { console.error('Radar error:', e); }
 }
 
 function showFrame(idx) {
   idx = Math.max(0, Math.min(idx, radarFrames.length - 1));
+  // Hide previous frame
   if (currentLayer) currentLayer.setOpacity(0);
   currentFrame = idx;
   const layer = getLayer(radarFrames[idx]);
@@ -385,17 +393,25 @@ function togglePlay() {
 function buildScrubber() {
   const ticks = document.getElementById('scrubber-ticks');
   ticks.innerHTML = '';
-  const n    = radarFrames.length;
-  const step = Math.max(1, Math.floor(n / 5));
-  radarFrames.forEach((f, i) => {
-    if (i % step === 0 || i === n - 1) {
-      const d     = new Date(f.time * 1000);
-      const label = i === n - 1 ? 'NOW' : d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-      const pct   = n > 1 ? (i / (n - 1)) * 100 : 100;
-      const t = document.createElement('span');
-      t.className = 'stick'; t.textContent = label; t.style.left = pct + '%';
-      ticks.appendChild(t);
-    }
+  const n = radarFrames.length;
+  if (!n) return;
+  // Pick ~5 evenly-spaced indices including first and last
+  const indices = new Set([0, n - 1]);
+  const count = Math.min(5, n);
+  for (let i = 1; i < count - 1; i++) indices.add(Math.round(i * (n - 1) / (count - 1)));
+  [...indices].sort((a,b) => a-b).forEach(i => {
+    const d   = new Date(radarFrames[i].time * 1000);
+    // Short format: "2:30p" style — no crowding
+    const h   = d.getHours(), m = d.getMinutes();
+    const hh  = h % 12 || 12;
+    const mm  = m.toString().padStart(2,'0');
+    const suf = h < 12 ? 'a' : 'p';
+    const label = i === n - 1 ? 'NOW' : `${hh}:${mm}${suf}`;
+    const pct = n > 1 ? (i / (n - 1)) * 100 : 100;
+    const t = document.createElement('span');
+    t.className = 'stick' + (i === n - 1 ? ' now-label' : '');
+    t.textContent = label; t.style.left = pct + '%';
+    ticks.appendChild(t);
   });
 }
 
