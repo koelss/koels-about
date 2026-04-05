@@ -1,0 +1,407 @@
+---
+// src/pages/speedtest.astro
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>koels.site — Speedtest</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2303030a'/%3E%3Ctext x='16' y='26' text-anchor='middle' font-family='Inter%2C system-ui%2C sans-serif' font-size='26' font-weight='900' fill='url(%23g)'%3EK%3C/text%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23a29bfe'/%3E%3Cstop offset='100%25' stop-color='%236c5ce7'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style is:global>
+:root {
+  --bg:       #03030a;
+  --bg2:      #08080f;
+  --surface:  #0f0f1a;
+  --surface2: #141420;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #f0eeff;
+  --muted:    rgba(240,238,255,0.68);
+  --dim:      rgba(240,238,255,0.4);
+  --accent:   #6c5ce7;
+  --accent2:  #a29bfe;
+  --lime:     #00ff88;
+  --white:    #ffffff;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { scroll-behavior:smooth; font-size:17px }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color:inherit; text-decoration:none }
+
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9990;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ── CURTAIN ── */
+#curtain {
+  position:fixed; inset:0; background:var(--bg); z-index:9997;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity 0.8s var(--ease), visibility 0.8s;
+}
+#curtain.gone { opacity:0; visibility:hidden; pointer-events:none }
+.curtain-logo {
+  font-family:var(--mono); font-size:0.85rem; letter-spacing:0.25em;
+  color:var(--dim); text-transform:uppercase;
+  animation:curtain-pulse 1s ease infinite;
+}
+@keyframes curtain-pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+/* ── HEADER ── */
+header {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  height:60px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px;
+  border-bottom:1px solid var(--border);
+  background:rgba(3,3,10,0.85);
+  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);
+}
+.logo {
+  font-family:var(--mono); font-size:0.7rem; font-weight:700;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--white);
+  display:flex; align-items:center; gap:10px;
+}
+.logo-pulse {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--lime); box-shadow:0 0 10px var(--lime);
+  animation:lg-pulse 2s ease infinite;
+}
+@keyframes lg-pulse { 0%,100%{box-shadow:0 0 6px var(--lime)} 50%{box-shadow:0 0 20px var(--lime),0 0 40px rgba(0,255,136,0.25)} }
+
+.nav { display:flex; align-items:center; gap:32px }
+.nav a {
+  font-family:var(--mono); font-size:0.72rem; letter-spacing:0.14em;
+  color:var(--muted); text-transform:uppercase; transition:color 0.2s;
+}
+.nav a:hover { color:var(--white) }
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:120px 20px 60px;
+  position:relative;
+}
+.hero::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 40%, black 0%, transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 40%, black 0%, transparent 100%);
+  opacity:0.5; pointer-events:none; z-index:0;
+}
+.hero-glow {
+  position:absolute; top:40%; left:50%;
+  transform:translate(-50%,-50%);
+  width:700px; height:700px;
+  background:radial-gradient(circle, rgba(108,92,231,0.12) 0%, transparent 60%);
+  pointer-events:none; z-index:0;
+}
+.hero-content { position:relative; z-index:2; width:100%; max-width:680px; text-align:center; }
+
+.eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:0.72rem; font-weight:500;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--accent2);
+  margin-bottom:32px;
+  animation:fade-up 0.9s var(--ease) both;
+}
+.eyebrow-line { width:28px; height:1px; background:var(--accent) }
+
+h1 {
+  font-family:var(--sans);
+  font-size:clamp(2.4rem, 5vw, 4.5rem);
+  font-weight:900; line-height:0.9;
+  letter-spacing:-0.04em; color:var(--white);
+  animation:fade-up 0.9s 0.07s var(--ease) both; margin-bottom:12px;
+}
+h1 .grad {
+  background:linear-gradient(135deg, var(--accent2) 0%, #c084fc 50%, var(--accent2) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer { to { background-position:200% center } }
+
+.hero-desc {
+  font-family:var(--mono); font-size:0.78rem; line-height:1.8;
+  color:var(--muted); letter-spacing:0.04em; margin-bottom:48px;
+  animation:fade-up 0.9s 0.14s var(--ease) both;
+}
+
+/* ── GAUGE ── */
+.gauge-wrap {
+  position:relative; width:280px; height:140px; margin:0 auto 32px;
+  animation:fade-up 0.9s 0.2s var(--ease) both;
+}
+.gauge-svg { width:100%; height:100%; }
+.gauge-bg-arc {
+  fill:none; stroke:rgba(255,255,255,0.06); stroke-width:8;
+  stroke-linecap:round;
+}
+.gauge-fill-arc {
+  fill:none; stroke:url(#gaugeGrad); stroke-width:8;
+  stroke-linecap:round; transition:stroke-dashoffset 0.4s var(--ease);
+}
+.gauge-value {
+  font-family:var(--sans); font-size:2.8rem; font-weight:900;
+  fill:var(--white); text-anchor:middle; letter-spacing:-0.04em;
+}
+.gauge-unit {
+  font-family:var(--mono); font-size:0.7rem; fill:var(--dim);
+  text-anchor:middle; letter-spacing:0.1em; text-transform:uppercase;
+}
+
+/* ── START BUTTON ── */
+#start-btn {
+  padding:14px 44px; border-radius:8px; border:none;
+  background:var(--accent); color:var(--white);
+  font-family:var(--mono); font-size:0.72rem; font-weight:700;
+  letter-spacing:0.14em; text-transform:uppercase;
+  cursor:pointer; transition:background 0.2s, transform 0.15s;
+  animation:fade-up 0.9s 0.28s var(--ease) both;
+}
+#start-btn:hover { background:#5a4bd1; }
+#start-btn:active { transform:scale(0.96); }
+#start-btn:disabled { opacity:0.4; cursor:default; transform:none; }
+
+/* ── RESULTS ── */
+.results-section {
+  width:100%; max-width:680px; margin:0 auto;
+  padding:0 20px 80px;
+}
+.metric-row {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:12px; margin-bottom:24px;
+}
+.metric-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px 24px;
+  text-align:center;
+  animation:fade-up 0.4s var(--ease) both;
+}
+.metric-label {
+  font-family:var(--mono); font-size:0.52rem; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--dim); margin-bottom:8px;
+}
+.metric-value {
+  font-family:var(--sans); font-size:1.8rem; font-weight:900;
+  letter-spacing:-0.04em; color:var(--lime);
+}
+.metric-unit {
+  font-family:var(--mono); font-size:0.6rem; color:var(--dim);
+  margin-top:2px; letter-spacing:0.06em;
+}
+
+/* ── FOOTER ── */
+footer {
+  display:flex; align-items:center; justify-content:space-between; padding:22px 48px;
+}
+.foot-l, .foot-r { font-family:var(--mono); font-size:0.68rem; letter-spacing:0.12em; color:var(--dim); text-transform:uppercase }
+.foot-r { display:flex; gap:18px }
+
+/* ── UTILS ── */
+@keyframes fade-up { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+.reveal { opacity:0; transform:translateY(22px); transition:opacity 0.7s var(--ease), transform 0.7s var(--ease) }
+.reveal.visible { opacity:1; transform:translateY(0) }
+
+@media(max-width:860px){
+  header { padding:0 20px }
+  .nav { display:none }
+  .hero { padding:120px 16px 40px; min-height:auto; }
+  h1 { font-size:2rem; }
+  .gauge-wrap { width:220px; height:110px; }
+  .gauge-value { font-size:2rem; }
+  .metric-row { grid-template-columns:1fr; }
+  footer { flex-direction:column; gap:10px; text-align:center }
+}
+</style>
+</head>
+<body>
+
+<div id="curtain"><div class="curtain-logo">koels.site</div></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><div class="logo-pulse"></div>Koels.site</div>
+  <nav class="nav">
+    <a href="/">Home</a>
+    <a href="/links">Links</a>
+    <a href="/radar">Radar</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="eyebrow"><span class="eyebrow-line"></span>Speedtest</div>
+    <h1><span class="grad">Test Your</span><br>Speed.</h1>
+    <p class="hero-desc">
+      Download-based speed measurement using Cloudflare's edge network.<br>Real results, no fluff.
+    </p>
+
+    <!-- Gauge -->
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 280 150">
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6c5ce7"/>
+            <stop offset="50%" stop-color="#a29bfe"/>
+            <stop offset="100%" stop-color="#00ff88"/>
+          </linearGradient>
+        </defs>
+        <!-- Background arc (semi-circle) -->
+        <path class="gauge-bg-arc" id="gauge-bg" d="M 30 130 A 110 110 0 0 1 250 130"/>
+        <!-- Filled arc -->
+        <path class="gauge-fill-arc" id="gauge-fill" d="M 30 130 A 110 110 0 0 1 250 130"
+              stroke-dasharray="345.58" stroke-dashoffset="345.58"/>
+        <!-- Value text -->
+        <text class="gauge-value" x="140" y="115" id="gauge-num">0</text>
+        <text class="gauge-unit" x="140" y="138">Mbps</text>
+      </svg>
+    </div>
+
+    <button id="start-btn" onclick="runTest()">Start Test</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<div class="results-section" id="results-section"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l">© 2026 Koels.site</div>
+  <div class="foot-r">
+    <a href="/">Home</a>
+    <span>·</span>
+    <a href="/links">Links</a>
+    <span>·</span>
+    <a href="/radar">Radar</a>
+    <span>·</span>
+    <a href="/ping">Ping</a>
+  </div>
+</footer>
+
+<script is:inline>
+/* Curtain */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('curtain').classList.add('gone'),650))
+
+/* ── SPEEDTEST ── */
+const gaugeFill = document.getElementById('gauge-fill');
+const gaugeNum  = document.getElementById('gauge-num');
+const startBtn  = document.getElementById('start-btn');
+const resultsEl = document.getElementById('results-section');
+const ARC_LEN = 345.58;
+
+let running = false;
+
+async function fetchWithProgress(url, onProgress) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const reader = resp.body.getReader();
+  let received = 0;
+  const startTime = performance.now();
+  const speeds = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    received += value.length;
+    const elapsed = (performance.now() - startTime) / 1000;
+    const speedMbps = (received * 8) / (elapsed * 1_000_000);
+    speeds.push(speedMbps);
+    onProgress(speedMbps, received);
+  }
+
+  const totalElapsed = (performance.now() - startTime) / 1000;
+  const avgSpeed = (received * 8) / (totalElapsed * 1_000_000);
+  return { avgSpeed, totalBytes: received, totalTime: totalElapsed, speeds };
+}
+
+function setGauge(pct, speed) {
+  gaugeFill.style.strokeDashoffset = ARC_LEN - (ARC_LEN * Math.min(pct / 100, 1));
+  gaugeNum.textContent = Math.round(speed);
+}
+
+async function runTest() {
+  if (running) return;
+  running = true;
+  startBtn.disabled = true;
+  startBtn.textContent = 'Testing…';
+  resultsEl.innerHTML = '';
+  setGauge(0, 0);
+
+  try {
+    /* Download 25MB from Cloudflare edge */
+    const testUrl = 'https://speed.cloudflare.com/__down?bytes=25000000';
+
+    const { avgSpeed, totalBytes, totalTime, speeds } = await fetchWithProgress(testUrl, (speed, bytes) => {
+      const pct = Math.min((bytes / 25_000_000) * 100, 100);
+      setGauge(pct, speed);
+    });
+
+    /* Peak speed */
+    const peakSpeed = Math.max(...speeds);
+
+    /* Final gauge */
+    setGauge(100, avgSpeed);
+
+    /* Results */
+    resultsEl.innerHTML = `
+      <div class="metric-row">
+        <div class="metric-card" style="animation-delay:0s">
+          <div class="metric-label">Download</div>
+          <div class="metric-value">${avgSpeed.toFixed(1)}</div>
+          <div class="metric-unit">Mbps avg</div>
+        </div>
+        <div class="metric-card" style="animation-delay:0.08s">
+          <div class="metric-label">Peak</div>
+          <div class="metric-value">${peakSpeed.toFixed(1)}</div>
+          <div class="metric-unit">Mbps</div>
+        </div>
+        <div class="metric-card" style="animation-delay:0.16s">
+          <div class="metric-label">Data</div>
+          <div class="metric-value">${(totalBytes / 1_000_000).toFixed(1)}</div>
+          <div class="metric-unit">MB in ${totalTime.toFixed(1)}s</div>
+        </div>
+      </div>
+    `;
+
+  } catch (err) {
+    resultsEl.innerHTML = `
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-label">Error</div>
+          <div class="metric-value" style="font-size:1.2rem;color:var(--red)">${err.message}</div>
+          <div class="metric-unit">Cloudflare may be unreachable</div>
+        </div>
+      </div>
+    `;
+  }
+
+  running = false;
+  startBtn.disabled = false;
+  startBtn.textContent = 'Test Again';
+}
+</script>
+</body>
+</html>
