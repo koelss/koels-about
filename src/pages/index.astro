@@ -248,6 +248,9 @@ section { position:relative; z-index:1 }
 
 /* ── COMMUNITY ── */
 .mc-section { padding:0 80px 100px }
+.widget-row {
+  display:flex; gap:16px; align-items:stretch;
+}
 .mc-widget, .dc-widget {
   background:rgba(2,10,24,0.55);
   border:1px solid var(--border);
@@ -256,9 +259,11 @@ section { position:relative; z-index:1 }
   backdrop-filter:blur(16px);
   transition:border-color 0.25s;
 }
+.mc-widget { flex:1; display:flex; flex-direction:column }
 .mc-widget:hover, .dc-widget:hover { border-color:var(--border2) }
 .mc-stripe { height:2px; background:linear-gradient(90deg,var(--accent),var(--teal)) }
-.mc-body { padding:28px 32px }
+.mc-body { padding:28px 32px; flex:1; display:flex; flex-direction:column }
+.mc-ip { margin-top:auto }
 .mc-top {
   display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
 }
@@ -299,19 +304,9 @@ section { position:relative; z-index:1 }
 }
 .mc-ip:hover { background:rgba(64,200,255,0.13); border-color:rgba(64,200,255,0.3) }
 
-/* ── DISCORD WIDGET ── */
-.dc-section { padding:0 80px 100px }
-.dc-widget {
-  overflow:hidden; border-radius:14px;
-  border:1px solid var(--border);
-  width:350px; transition:border-color 0.25s;
-}
-.dc-widget:hover { border-color:rgba(88,101,242,0.35) }
+.dc-widget { flex-shrink:0; width:350px }
 .dc-stripe { height:2px; background:linear-gradient(90deg,#5865f2,#7289da) }
-.dc-iframe {
-  width:100%; height:500px;
-  border:none; display:block;
-}
+.dc-iframe { width:100%; height:100%; min-height:460px; border:none; display:block }
 
 /* ── ABOUT + CONTACT ── */
 .bottom-grid {
@@ -383,7 +378,7 @@ footer {
   .scroll-hint { left:24px }
   .projects { padding:72px 24px }
   .mc-section { padding:0 24px 72px }
-  .dc-section { padding:0 24px 72px }
+  .widget-row { flex-direction:column }
   .dc-widget { width:100% }
   .bottom-grid { grid-template-columns:1fr }
   .bottom-col { padding:52px 24px; border-right:none; border-bottom:1px solid var(--border) }
@@ -483,50 +478,46 @@ footer {
   </div>
 </section>
 
-<!-- ── MC SERVER ── -->
+<!-- ── COMMUNITY ── -->
 <section class="mc-section">
   <div class="section-header reveal">
-    <span class="section-num">02 / Server</span>
-    <span class="section-title">Minecraft server</span>
+    <span class="section-num">02 / Community</span>
+    <span class="section-title">Join us</span>
   </div>
 
-  <div class="mc-widget reveal">
-    <div class="mc-stripe"></div>
-    <div class="mc-body">
-      <div class="mc-top">
-        <span class="mc-label">koels.online</span>
-        <span class="mc-live"><i></i>Live</span>
+  <div class="widget-row">
+
+    <div class="mc-widget reveal">
+      <div class="mc-stripe"></div>
+      <div class="mc-body">
+        <div class="mc-top">
+          <span class="mc-label">koels.online</span>
+          <span class="mc-live"><i></i>Live</span>
+        </div>
+        <div class="mc-status-row">
+          <div class="mc-status-text" id="mcStatus">Checking…</div>
+        </div>
+        <div class="mc-players"><strong id="mcNow">—</strong> / <strong id="mcMax">—</strong> players online</div>
+        <div class="mc-bar-row"><span>Capacity</span><span id="mcPct">—</span></div>
+        <div class="mc-track"><div class="mc-fill" id="mcFill"></div></div>
+        <button class="mc-ip" onclick="copyIP()">
+          <span>⛏</span> koels.online — click to copy
+        </button>
       </div>
-      <div class="mc-status-row">
-        <div class="mc-status-text" id="mcStatus">Checking…</div>
-      </div>
-      <div class="mc-players"><strong id="mcNow">—</strong> / <strong id="mcMax">—</strong> players online</div>
-      <div class="mc-bar-row"><span>Capacity</span><span id="mcPct">—</span></div>
-      <div class="mc-track"><div class="mc-fill" id="mcFill"></div></div>
-      <button class="mc-ip" onclick="copyIP()">
-        <span>⛏</span> koels.online — click to copy
-      </button>
     </div>
-  </div>
-</section>
 
-<!-- ── DISCORD ── -->
-<section class="dc-section">
-  <div class="section-header reveal">
-    <span class="section-num">03 / Discord</span>
-    <span class="section-title">Join the server</span>
-  </div>
+    <div class="dc-widget reveal" style="transition-delay:.06s">
+      <div class="dc-stripe"></div>
+      <iframe
+        class="dc-iframe"
+        src="https://discord.com/widget?id=1494858459785465896&theme=dark"
+        allowtransparency="true"
+        frameborder="0"
+        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+        title="Discord"
+      ></iframe>
+    </div>
 
-  <div class="dc-widget reveal">
-    <div class="dc-stripe"></div>
-    <iframe
-      class="dc-iframe"
-      src="https://discord.com/widget?id=1494858459785465896&theme=dark"
-      allowtransparency="true"
-      frameborder="0"
-      sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-      title="Discord server widget"
-    ></iframe>
   </div>
 </section>
 
@@ -534,7 +525,7 @@ footer {
 <div class="bottom-grid">
   <div class="bottom-col reveal">
     <div class="section-header">
-      <span class="section-num">04 / About</span>
+      <span class="section-num">03 / About</span>
       <span class="section-title">Me</span>
     </div>
     <p class="about-text">
@@ -544,7 +535,7 @@ footer {
 
   <div class="bottom-col reveal" style="transition-delay:.1s">
     <div class="section-header">
-      <span class="section-num">05 / Contact</span>
+      <span class="section-num">04 / Contact</span>
       <span class="section-title">Get in touch</span>
     </div>
     <div class="contact-rows">
