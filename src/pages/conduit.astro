@@ -156,6 +156,7 @@
       color: var(--teal); font-size: 0.72rem; font-weight: 500;
       font-family: 'JetBrains Mono', monospace;
       letter-spacing: 0.06em; margin-bottom: 2.2rem;
+      white-space: nowrap;
     }
 
     .badge-dot {
@@ -490,7 +491,7 @@
 
     <div class="badge">
       <span class="badge-dot"></span>
-      v1.0.0 — based on Velocity dev/3.0.0
+      <span id="badge-text">v1.0.0 — based on Velocity dev/3.0.0</span>
     </div>
 
     <h1>Velocity for<br /><span class="accent">modded networks.</span></h1>
@@ -813,7 +814,7 @@ function copyConfig() {
     if (!rel.ok) return;
     const data = await rel.json();
     const tag = data.tag_name || 'v1.0.0';
-    const el = document.querySelector('.badge span:last-child');
+    const el = document.getElementById('badge-text');
     if (el) el.textContent = tag + ' — based on Velocity dev/3.0.0';
   } catch (_) {}
 })();
