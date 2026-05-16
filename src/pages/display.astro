@@ -62,7 +62,7 @@
     header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center;
       padding: 0 32px;
       background: rgba(2,8,16,0.7);
       border-bottom: 1px solid var(--border);
@@ -82,96 +82,29 @@
     }
     @keyframes dot-pulse{0%,100%{box-shadow:0 0 6px var(--teal)}50%{box-shadow:0 0 20px var(--teal),0 0 40px rgba(0,255,204,0.2)}}
 
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 16px; border-radius: 6px;
-      font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      cursor: pointer; border: 1px solid transparent; transition: 0.2s var(--ease);
-      text-decoration: none;
-    }
-    .btn-primary {
-      background: var(--cyan); color: #010810; border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(64,200,255,0.2);
-    }
-    .btn-primary:hover { background: #2ab0e8; border-color: #2ab0e8; }
-    .btn-ghost {
-      background: transparent; color: var(--muted); border-color: var(--border2);
-    }
-    .btn-ghost:hover { color: #e8f8ff; border-color: rgba(64,200,255,0.3); background: rgba(0,120,200,0.08); }
-
     /* main */
     main {
       position: relative; z-index: 1;
       min-height: 100vh;
       padding-top: 56px;
       display: flex; flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-
-    /* drop zone */
-    #drop-zone {
-      flex: 1;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 20px;
-      padding: 60px 24px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #drop-zone.drag-over {
-      background: rgba(64,200,255,0.04);
-    }
-
-    .drop-ring {
-      width: 120px; height: 120px; border-radius: 50%;
-      border: 1px solid var(--border2);
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      position: relative;
-    }
-    #drop-zone.drag-over .drop-ring,
-    #drop-zone:hover .drop-ring {
-      border-color: var(--cyan);
-      box-shadow: 0 0 32px rgba(64,200,255,0.15);
-    }
-    .drop-ring svg {
-      width: 36px; height: 36px;
-      color: var(--dim);
-      transition: color 0.2s;
-    }
-    #drop-zone:hover .drop-ring svg,
-    #drop-zone.drag-over .drop-ring svg { color: var(--cyan); }
-
-    .drop-label {
-      font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--muted); text-align: center;
-    }
-    .drop-sub {
-      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--dim); text-align: center;
-      margin-top: -10px;
-    }
-
-    #file-input { display: none; }
 
     /* image view */
     #image-view {
       display: none;
-      flex: 1;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 32px 24px;
-      gap: 20px;
+      gap: 16px;
     }
     #image-view.visible { display: flex; }
 
     #displayed-img {
       max-width: 100%;
-      max-height: calc(100vh - 180px);
+      max-height: calc(100vh - 140px);
       border-radius: 10px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(64,200,255,0.08);
       object-fit: contain;
@@ -179,24 +112,27 @@
     }
     @keyframes img-in { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
 
-    .img-meta {
-      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--dim);
-      text-align: center;
+    /* empty state */
+    #empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      color: var(--dim);
     }
+    #empty-state.visible { display: flex; }
 
-    /* toast */
-    .toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px);
-      background: rgba(2,12,28,0.92); backdrop-filter: blur(16px);
+    .empty-icon {
+      width: 80px; height: 80px; border-radius: 50%;
       border: 1px solid var(--border2);
-      color: var(--teal); font-family: var(--mono); font-size: 0.62rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 10px 20px; border-radius: 6px;
-      opacity: 0; transition: opacity 0.3s, transform 0.3s;
-      z-index: 9999; pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
     }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .empty-icon svg { width: 28px; height: 28px; color: var(--dim); }
+
+    .empty-label {
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+    }
 
     @media(max-width: 600px) {
       header { padding: 0 16px; }
@@ -212,38 +148,23 @@
   <div class="blob b4"></div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <header>
   <a href="/" class="logo"><div class="logo-dot"></div>Koels.site</a>
-  <div class="header-actions">
-    <button class="btn btn-ghost" id="clear-btn" style="display:none" onclick="clearImage()">Clear</button>
-    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Upload
-    </button>
-  </div>
 </header>
-
-<input type="file" id="file-input" accept="image/*">
 
 <main>
 
-  <!-- drop zone (shown when no image) -->
-  <div id="drop-zone">
-    <div class="drop-ring">
+  <div id="image-view">
+    <img id="displayed-img" src="/display.png" alt="Display">
+  </div>
+
+  <div id="empty-state">
+    <div class="empty-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
       </svg>
     </div>
-    <div class="drop-label">Drop an image here</div>
-    <div class="drop-sub">or click to upload &nbsp;·&nbsp; paste with Ctrl+V</div>
-  </div>
-
-  <!-- image view (shown when image loaded) -->
-  <div id="image-view">
-    <img id="displayed-img" src="/display.png" alt="Displayed image">
-    <div class="img-meta" id="img-meta"></div>
+    <div class="empty-label">Nothing here yet</div>
   </div>
 
 </main>
@@ -251,102 +172,19 @@
 <script is:inline>
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-const dropZone     = document.getElementById('drop-zone');
 const imageView    = document.getElementById('image-view');
+const emptyState   = document.getElementById('empty-state');
 const displayedImg = document.getElementById('displayed-img');
-const imgMeta      = document.getElementById('img-meta');
-const fileInput    = document.getElementById('file-input');
-const clearBtn     = document.getElementById('clear-btn');
-const toast        = document.getElementById('toast');
-
-// Try to load the repo image on startup
-function showStaticImage() {
-  dropZone.style.display = 'none';
-  imageView.classList.add('visible');
-  clearBtn.style.display = '';
-  imgMeta.textContent = 'display.png';
-}
 
 displayedImg.addEventListener('load', () => {
-  if (displayedImg.naturalWidth > 0) showStaticImage();
+  if (displayedImg.naturalWidth > 0) {
+    imageView.classList.add('visible');
+    emptyState.classList.remove('visible');
+  }
 });
 displayedImg.addEventListener('error', () => {
-  // No image uploaded yet — show drop zone
-  dropZone.style.display = '';
   imageView.classList.remove('visible');
-  clearBtn.style.display = 'none';
-});
-
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2200);
-}
-
-function loadImage(file) {
-  if (!file || !file.type.startsWith('image/')) {
-    showToast('Not an image file');
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = e => {
-    displayedImg.src = e.target.result;
-    displayedImg.onload = () => {
-      const w = displayedImg.naturalWidth;
-      const h = displayedImg.naturalHeight;
-      imgMeta.textContent = `${file.name}  ·  ${w} × ${h}  ·  ${(file.size / 1024).toFixed(0)} KB`;
-    };
-    dropZone.style.display = 'none';
-    imageView.classList.add('visible');
-    clearBtn.style.display = '';
-    showToast('Image loaded');
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearImage() {
-  fileInput.value = '';
-  // Reload the repo image; if it 404s the error handler shows the drop zone
-  displayedImg.src = '/display.png?' + Date.now();
-  imgMeta.textContent = 'display.png';
-}
-
-// file input
-fileInput.addEventListener('change', e => {
-  if (e.target.files[0]) loadImage(e.target.files[0]);
-});
-
-// click drop zone
-dropZone.addEventListener('click', () => fileInput.click());
-
-// drag and drop
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) loadImage(file);
-});
-
-// drag over whole page when image is already showing
-document.addEventListener('dragover', e => e.preventDefault());
-document.addEventListener('drop', e => {
-  e.preventDefault();
-  const file = e.dataTransfer.files[0];
-  if (file) loadImage(file);
-});
-
-// paste (Ctrl+V)
-document.addEventListener('paste', e => {
-  const items = e.clipboardData?.items;
-  if (!items) return;
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
-      loadImage(item.getAsFile());
-      break;
-    }
-  }
+  emptyState.classList.add('visible');
 });
 </script>
 
