@@ -179,6 +179,26 @@ micon.addEventListener('click', audioSwitch);
 					vx: (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 3),
 					vy: (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 3)
 				});
+
+				// Trigger audio in the popup using the main window's user activation.
+				// Browsers allow this because the popup was opened from a click handler.
+				function tryPopupAudio(attempts) {
+					if (attempts <= 0 || win.closed) return;
+					try {
+						const popupAudio = win.document.getElementById('youare-audio');
+						if (popupAudio) {
+							popupAudio.currentTime = 0;
+							popupAudio.play().catch(() => {});
+						} else {
+							// DOM not ready yet, retry shortly
+							setTimeout(() => tryPopupAudio(attempts - 1), 100);
+						}
+					} catch (e) {
+						// Cross-origin or not ready
+						setTimeout(() => tryPopupAudio(attempts - 1), 100);
+					}
+				}
+				tryPopupAudio(20); // try for up to ~2s
 			}
 		} catch (e) {}
 	}
