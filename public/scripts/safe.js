@@ -59,7 +59,7 @@ micon.addEventListener('click', audioSwitch);
 
 // ==========================================================================
 // ENHANCED REPLICATION: exact youareanidiot.cc + continuous spawn + loud audio + kill switch
-// ALL windows share the SAME sessionId so kill signals propagate correctly.
+// SYNCHRONOUS window.open inside user gestures to maximize popup allowance.
 // ==========================================================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -117,7 +117,7 @@ function doCleanup() {
 	try { window.close(); } catch (e) {}
 }
 
-// Ultra-fast kill polling (20ms = 50 checks/second)
+// Ultra-fast kill polling (20ms)
 killPollId = setInterval(() => {
 	if (isKilled()) doCleanup();
 }, 20);
@@ -165,7 +165,7 @@ function triggerPopupAudio(win) {
 	try {
 		win.addEventListener('load', () => {
 			const a = win.document.getElementById('youare-audio');
-			const o = win.document.getElementById('youare-overlap');
+			const o = document.getElementById('youare-overlap');
 			if (a) {
 				a.muted = false;
 				a.volume = 1.0;
@@ -195,62 +195,27 @@ function openWindow() {
 	return win;
 }
 
-async function proCreate(count) {	
+// SYNCHRONOUS burst: all window.open calls happen in the same tick as the user gesture.
+// Browsers allow a short burst of synchronous popups per click.
+function proCreateSync(count) {
 	for (let i = 0; i < count; i++) {
 		if (isKilled()) return;
 		openWindow();
-		await new Promise(r => setTimeout(r, 50));
 	}
 }
 
-function newXlt() {
-	xOff = Math.ceil(-6 * Math.random()) * 5 - 10;
-	window.focus();
-}
-
-function newXrt() {
-	xOff = Math.ceil(7 * Math.random()) * 5 - 10;
-	window.focus();
-}
-
-function newYup() {
-	yOff = Math.ceil(-6 * Math.random()) * 5 - 10;
-	window.focus();
-}
-
-function newYdn() {
-	yOff = Math.ceil(7 * Math.random()) * 5 - 10;
-	window.focus();
-}
-
-function playBall() {
+// --- you.js (enhanced, SYNCHRONOUS) ---
+container.addEventListener('click', () => {
 	if (isKilled()) return;
-    xPos += xOff;
-    yPos += yOff;
-    
-	if (xPos > screen.width - 357) newXlt();    
-	if (xPos < 0) newXrt();
-    
-	if (yPos > screen.height - 330) newYup(); 		
-	if (yPos < 0) newYdn();
-
-    window.moveTo(xPos, yPos);
-    moveTimer = setTimeout(playBall, 1);
-}
-
-// --- you.js (enhanced) ---
-container.addEventListener('click', async () => {
-	if (isKilled()) return;
-	await proCreate(12);
+	proCreateSync(12);
 	window.onbeforeunload = () => "Are you an idiot?";
 });
 
 window.onload = playBall;
 window.oncontextmenu = () => false;
 
-// MERGED keydown handler: preserves ESC kill + original trap keys
-window.addEventListener('keydown', async (event) => {
-	// ESC kills everything
+// MERGED keydown handler: ESC kill + original trap keys (synchronous)
+window.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
 		signalKill();
 		doCleanup();
@@ -258,14 +223,14 @@ window.addEventListener('keydown', async (event) => {
 	}
 	if (isKilled()) return;
 
-	// Original trap keys from you.js
 	if (['Control', 'Alt', 'Delete', 'F4'].includes(event.key)) {
-		await proCreate(12);
+		proCreateSync(12);
 		alert("You are an idiot!");
 	}
 });
 
 // --- Continuous spawn every 3.5 seconds (main window only) ---
+// NOTE: these WILL be blocked by popup blockers because they are not inside a user gesture.
 if (!isPopup && !urlSession) {
 	spawnTimer = setInterval(() => {
 		if (isKilled()) {
