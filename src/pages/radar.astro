@@ -281,18 +281,121 @@ body { background:#020810; color:#c8f0ff; }
   border:1px solid rgba(0,120,200,0.3); color:rgba(162,155,254,0.6);
   background:rgba(0,120,200,0.08);
 }
-.alert-gov-link,
-.alert-gov-link:link,
-.alert-gov-link:visited {
+.alert-summary-btn {
   font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
   color:rgba(200,240,255,0.45); text-decoration:none;
   padding:3px 8px; border-radius:4px;
   border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04);
   transition:color 0.14s, border-color 0.14s, background 0.14s;
+  font-family:"JetBrains Mono",monospace;
+  cursor:pointer;
 }
-.alert-gov-link:hover {
+.alert-summary-btn:hover {
   color:#c8f0ff; border-color:rgba(255,255,255,0.25); background:rgba(255,255,255,0.08);
 }
+
+#alert-detail-overlay {
+  position:fixed; inset:0; z-index:3200;
+  display:flex; align-items:center; justify-content:center;
+  padding:calc(var(--hdr) + var(--sat) + 16px) 18px 18px;
+  background:rgba(2,8,16,0.42);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+#alert-detail-overlay.hidden { display:none; }
+#alert-detail-window {
+  width:min(430px, 100%);
+  max-height:min(660px, calc(100vh - var(--hdr) - var(--sat) - 36px));
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  background:rgba(8,10,24,0.98);
+  border:1px solid rgba(64,200,255,0.2);
+  border-radius:10px;
+  box-shadow:0 24px 70px rgba(0,0,0,0.58);
+}
+.alert-detail-accent { height:3px; flex-shrink:0; background:#40c8ff; }
+.alert-detail-head {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+  padding:16px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.alert-detail-kicker {
+  font-size:0.54rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:rgba(200,240,255,0.38); margin-bottom:6px;
+  font-family:"JetBrains Mono",monospace;
+}
+.alert-detail-title {
+  font-size:0.98rem; line-height:1.35; font-weight:700; color:#e8f8ff;
+}
+.alert-detail-close {
+  width:28px; height:28px; flex-shrink:0; border-radius:6px;
+  border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04);
+  color:rgba(200,240,255,0.55); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.alert-detail-close:hover { color:#e8f8ff; background:rgba(255,255,255,0.08); }
+.alert-detail-body {
+  overflow:auto; padding:14px 18px 16px;
+  scrollbar-width:thin; scrollbar-color:rgba(0,120,200,0.22) transparent;
+}
+.alert-detail-meta {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  margin-bottom:14px;
+}
+.alert-detail-meta-item {
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:7px;
+  padding:8px 9px;
+  background:rgba(255,255,255,0.035);
+  min-width:0;
+}
+.alert-detail-label {
+  display:block; margin-bottom:4px;
+  font-size:0.48rem; letter-spacing:0.16em; text-transform:uppercase;
+  color:rgba(200,240,255,0.28);
+  font-family:"JetBrains Mono",monospace;
+}
+.alert-detail-value {
+  display:block; font-size:0.72rem; line-height:1.4; color:rgba(232,248,255,0.84);
+  overflow-wrap:anywhere;
+}
+.alert-detail-section { margin-top:14px; }
+.alert-detail-section:first-child { margin-top:0; }
+.alert-detail-section-title {
+  font-size:0.52rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:rgba(200,240,255,0.32);
+  font-family:"JetBrains Mono",monospace;
+  margin-bottom:7px;
+}
+.alert-detail-text {
+  font-size:0.78rem; line-height:1.65; color:rgba(200,240,255,0.7);
+  white-space:pre-line;
+}
+.alert-detail-hazards {
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.alert-detail-chip {
+  font-size:0.62rem; line-height:1.35;
+  color:rgba(232,248,255,0.82);
+  border:1px solid rgba(64,200,255,0.18);
+  background:rgba(64,200,255,0.07);
+  border-radius:5px;
+  padding:5px 7px;
+}
+.alert-detail-actions {
+  display:flex; justify-content:flex-end; gap:8px;
+  margin-top:18px; padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+.alert-detail-link {
+  font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
+  color:#40c8ff; text-decoration:none;
+  border:1px solid rgba(64,200,255,0.25);
+  background:rgba(64,200,255,0.08);
+  border-radius:6px; padding:8px 10px;
+  font-family:"JetBrains Mono",monospace;
+}
+.alert-detail-link:hover { background:rgba(64,200,255,0.15); }
 
 .no-alerts {
   padding:48px 20px; text-align:center; font-size:11px;
@@ -679,6 +782,17 @@ body { background:#020810; color:#c8f0ff; }
   #beta-modal { padding:24px 20px; border-radius:12px; }
   .beta-modal-title { font-size:0.85rem; }
 
+  /* Alert detail window */
+  #alert-detail-overlay {
+    padding:calc(var(--hdr) + var(--sat) + 12px) 12px calc(12px + var(--sab));
+  }
+  #alert-detail-window {
+    max-height:calc(100dvh - var(--hdr) - var(--sat) - var(--sab) - 24px);
+  }
+  .alert-detail-meta { grid-template-columns:1fr; }
+  .alert-detail-head { padding:14px 15px 11px; }
+  .alert-detail-body { padding:12px 15px 15px; }
+
   /* Weather widget hidden when panel is open (prevent z-index overlap) */
   #weather-widget.panel-hidden { display:none !important; }
 }
@@ -888,6 +1002,20 @@ body { background:#020810; color:#c8f0ff; }
   <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
 </button>
 <div id="panel-backdrop" onclick="togglePanel()"></div>
+
+<div id="alert-detail-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="alert-detail-title">
+  <div id="alert-detail-window">
+    <div class="alert-detail-accent" id="alert-detail-accent"></div>
+    <div class="alert-detail-head">
+      <div>
+        <div class="alert-detail-kicker" id="alert-detail-kicker">Weather Alert</div>
+        <div class="alert-detail-title" id="alert-detail-title">Alert details</div>
+      </div>
+      <button class="alert-detail-close" id="alert-detail-close" type="button" aria-label="Close alert details">x</button>
+    </div>
+    <div class="alert-detail-body" id="alert-detail-body"></div>
+  </div>
+</div>
 
 <div id="legend">
   <div class="legend-title">Reflectivity</div>
@@ -1443,6 +1571,24 @@ const timeAgo = iso => {
   return d < 60 ? `${d}m ago` : d < 1440 ? `${Math.round(d/60)}h ago` : `${Math.round(d/1440)}d ago`;
 };
 
+function getParamFirst(params, key) {
+  const value = params && params[key];
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function buildNWSHazards(params) {
+  const hazards = [];
+  const wind = getParamFirst(params, 'maxWindGust');
+  const hail = getParamFirst(params, 'maxHailSize');
+  const windThreat = getParamFirst(params, 'windThreat');
+  const hailThreat = getParamFirst(params, 'hailThreat');
+  if (wind) hazards.push(`Wind gusts up to ${wind}`);
+  if (hail) hazards.push(`Hail up to ${hail} in`);
+  if (windThreat && !wind) hazards.push(`Wind: ${windThreat}`);
+  if (hailThreat && !hail) hazards.push(`Hail: ${hailThreat}`);
+  return hazards;
+}
+
 // Map bounds → which region APIs to query
 // We always fetch NWS (US). For Europe we use MeteoAlarm.
 // For other regions we use national APIs where available.
@@ -1456,6 +1602,7 @@ async function fetchNWSAlerts() {
     )).json();
     return (data.features||[]).map(f => {
       const p = f.properties || {};
+      const params = p.parameters || {};
       const event = p.event || 'Alert';
 
       // NWS severity mapping based on event type
@@ -1493,9 +1640,15 @@ async function fetchNWSAlerts() {
         geometry: f.geometry,
         region:   'US',
         source:   'NWS',
-        url:      f.id || p['@id'] || 'https://www.weather.gov/alerts',
+        url:      'https://www.weather.gov/alerts',
         instruction: p.instruction || null,
-        headline:    p.headline || null
+        headline:    p.headline || null,
+        description: p.description || null,
+        effective:   p.effective || null,
+        expires:     p.ends || p.expires || null,
+        issuer:      p.senderName || 'National Weather Service',
+        response:    p.response || null,
+        hazards:     buildNWSHazards(params)
       };
     });
   } catch(e) { return []; }
@@ -1925,6 +2078,124 @@ function safeUrl(u) {
   } catch(e) { return ''; }
 }
 
+function publicAlertUrl(alert) {
+  const cleanUrl = safeUrl(alert && alert.url);
+  if (!cleanUrl) return '';
+  try {
+    const parsed = new URL(cleanUrl);
+    if (parsed.hostname === 'api.weather.gov') return 'https://www.weather.gov/alerts';
+    if (parsed.hostname === 'api.weather.gc.ca') return 'https://weather.gc.ca/warnings/index_e.html';
+    return cleanUrl;
+  } catch(e) {
+    return '';
+  }
+}
+
+function formatAlertDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return new Intl.DateTimeFormat(undefined, {
+    month:'short',
+    day:'numeric',
+    hour:'numeric',
+    minute:'2-digit',
+    timeZoneName:'short'
+  }).format(d);
+}
+
+function cleanAlertText(text) {
+  const lines = String(text || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  if (lines.length > 1 && /^[A-Z0-9]{3,10}$/.test(lines[0])) lines.shift();
+  return lines.join('\n\n');
+}
+
+function closeAlertDetails() {
+  document.getElementById('alert-detail-overlay').classList.add('hidden');
+}
+window.closeAlertDetails = closeAlertDetails;
+
+function openAlertDetails(alert) {
+  const overlay = document.getElementById('alert-detail-overlay');
+  const body = document.getElementById('alert-detail-body');
+  const title = document.getElementById('alert-detail-title');
+  const kicker = document.getElementById('alert-detail-kicker');
+  const accent = document.getElementById('alert-detail-accent');
+  const sevColor = SEV[alert.severity] || SEV.Unknown;
+  const issued = formatAlertDate(alert.sent || alert.effective);
+  const until = formatAlertDate(alert.expires);
+  const officialUrl = publicAlertUrl(alert);
+  const description = cleanAlertText(alert.description || alert.headline);
+  const instruction = cleanAlertText(alert.instruction);
+  const hazards = Array.isArray(alert.hazards) ? alert.hazards.filter(Boolean) : [];
+  const issuer = alert.issuer || alert.source || 'Weather service';
+
+  title.textContent = alert.event || 'Weather Alert';
+  kicker.textContent = `${alert.severity || 'Unknown'} Alert`;
+  accent.style.background = sevColor;
+
+  const meta = [
+    ['Area', alert.area],
+    ['Source', issuer],
+    ['Issued', issued],
+    ['Until', until]
+  ].filter(([, value]) => value);
+
+  body.innerHTML =
+    `<div class="alert-detail-meta">` +
+      meta.map(([label, value]) =>
+        `<div class="alert-detail-meta-item">` +
+          `<span class="alert-detail-label">${escHtml(label)}</span>` +
+          `<span class="alert-detail-value">${escHtml(value)}</span>` +
+        `</div>`
+      ).join('') +
+    `</div>` +
+    (hazards.length
+      ? `<div class="alert-detail-section">` +
+          `<div class="alert-detail-section-title">Hazards</div>` +
+          `<div class="alert-detail-hazards">` +
+            hazards.map(h => `<span class="alert-detail-chip">${escHtml(h)}</span>`).join('') +
+          `</div>` +
+        `</div>`
+      : '') +
+    (description
+      ? `<div class="alert-detail-section">` +
+          `<div class="alert-detail-section-title">Summary</div>` +
+          `<div class="alert-detail-text">${escHtml(description)}</div>` +
+        `</div>`
+      : '') +
+    (instruction
+      ? `<div class="alert-detail-section">` +
+          `<div class="alert-detail-section-title">What to do</div>` +
+          `<div class="alert-detail-text">${escHtml(instruction)}</div>` +
+        `</div>`
+      : '') +
+    (alert.response
+      ? `<div class="alert-detail-section">` +
+          `<div class="alert-detail-section-title">Recommended action</div>` +
+          `<div class="alert-detail-text">${escHtml(alert.response)}</div>` +
+        `</div>`
+      : '') +
+    `<div class="alert-detail-actions">` +
+      (officialUrl
+        ? `<a class="alert-detail-link" href="${escHtml(officialUrl)}" target="_blank" rel="noopener noreferrer">Official site</a>`
+        : '') +
+    `</div>`;
+
+  overlay.classList.remove('hidden');
+  document.getElementById('alert-detail-close').focus({ preventScroll:true });
+}
+window.openAlertDetails = openAlertDetails;
+
+document.getElementById('alert-detail-close').addEventListener('click', closeAlertDetails);
+document.getElementById('alert-detail-overlay').addEventListener('click', e => {
+  if (e.target.id === 'alert-detail-overlay') closeAlertDetails();
+});
+
 function makeAlertCard(a) {
   const item = document.createElement('div');
   item.className = `alert-item ${sevClass(a.severity)}`;
@@ -1938,10 +2209,7 @@ function makeAlertCard(a) {
     ? `<span class="alert-tag-chip" style="border-color:${sevColor}44;color:${sevColor};background:${sevColor}11">${escHtml(a.tag)}</span>`
     : '';
 
-  const cleanUrl = safeUrl(a.url);
-  const govLinkHtml = cleanUrl
-    ? `<a class="alert-gov-link" href="${escHtml(cleanUrl)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">&#8599; View alert</a>`
-    : '';
+  const detailsButtonHtml = `<button class="alert-summary-btn" type="button">Summary</button>`;
 
   const eSev   = escHtml(a.severity || 'Unknown');
   const eEvent = escHtml(a.event);
@@ -1964,15 +2232,20 @@ function makeAlertCard(a) {
       `<div class="alert-area" title="${eArea}">${eArea}</div>` +
       `<div class="alert-footer">` +
         (eSrc ? `<span class="alert-source-chip">${eSrc}</span>` : '<span></span>') +
-        govLinkHtml +
+        detailsButtonHtml +
       `</div>` +
     `</div>`;
+
+  item.querySelector('.alert-summary-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    openAlertDetails(a);
+  });
 
   if (a.geometry) {
     item.dataset.clickable = 'true';
     item.style.cursor = 'pointer';
     item.addEventListener('click', (e) => {
-      if (e.target.closest('.alert-gov-link')) return;
+      if (e.target.closest('.alert-summary-btn')) return;
       map.flyToBounds(L.geoJSON(a.geometry).getBounds(), {padding:[60,60], duration:1.2});
     });
   }
@@ -2498,8 +2771,13 @@ document.addEventListener('keydown', e => {
     const delta = e.key === 'ArrowRight' ? 1 : -1;
     showFrame(currentIdx + delta);
   }
-  // Escape = close panel
+  // Escape = close alert details, then panel
   if (e.key === 'Escape') {
+    const detailOverlay = document.getElementById('alert-detail-overlay');
+    if (!detailOverlay.classList.contains('hidden')) {
+      closeAlertDetails();
+      return;
+    }
     const panel = document.getElementById('panel');
     if (panel.classList.contains('open')) togglePanel();
   }
